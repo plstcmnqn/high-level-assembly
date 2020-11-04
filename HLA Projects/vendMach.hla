@@ -1,0 +1,381 @@
+/*Program: Vending Machine
+ * Date: 6 October 2016
+ * Name: Justin Fonseca
+ * Project: Programming Project 1
+ */ 
+ 
+ program vend; 
+
+
+#include ("stdlib.hhf");
+//create structure/record Product
+type 
+	Product:
+	record[2]
+		
+	itemNum:int32;
+	itemPrice:int32;
+	inStock:int32;
+	itemName: string; 
+	
+	endrecord;
+	
+
+
+//static variables declared
+static
+	//usrCredit: int32;
+	usrSelect: int32;
+	total: int32:= 0; 
+	itemPrice: int32:= 0; 
+	cstmPay: int32:= 0; 
+	cstmChange: int32:= 0; 
+	itemArray :Product[6];
+	cstmReceipt: Product[25]; 
+	inventHold :int32:= 0;
+	prodNameLd: string;
+	purchaseCount: int32:= 0;
+
+	
+//++++++++    
+//procedure declaration
+
+procedure getSelect(prompt: string; min: int32; max: int32; var invent: Product); @returns("eax");@forward;
+procedure printInvent(min: int32; max: int32; var invent: Product);@forward;  
+procedure payHandler(prompt: string; price: int32);@returns("eax");@forward;
+
+
+/**************************** getSelect procudure */
+procedure getSelect(prompt: string; min: int32; max: int32; var invent: Product);
+var 
+	i: int32;
+	h: int32;
+begin getSelect;
+
+forever
+	
+	forever
+				
+		printInvent(min, max,(type Product itemArray) );	
+	try    
+		
+		stdout.put(prompt);
+		stdin.flushInput();
+		stdin.geti32();
+		unprotected
+		
+		if(eax >= min && eax <= max )then
+			mov(eax,i);
+			array.index( ebx, itemArray , i);		
+			if((type Product[ebx]).inStock > 0)then
+				break;
+			else
+			stdout.put(nl, "out of stock", nl); 
+			
+			endif;
+		else
+		stdout.put(nl,"invalid input: item doesn't exist",nl); 
+					
+		endif; 
+		
+		anyexception
+		stdout.put("invalid input",nl);	
+		 
+	endtry;
+	endfor; 
+	
+		mov(eax,i);
+		array.index( ebx, itemArray , i);			
+		
+		mov((type Product[ebx]).inStock,h);
+		if(eax >= min && eax <= max && h > 0 ) then
+				
+			mov(eax,i);
+			array.index( ebx, itemArray , i);
+			mov((type Product[ebx]).inStock,h);
+			if(h > 0)then
+		
+				break;
+			endif;
+		else
+			stdout.put(nl,"OUT OF STOCK",nl);
+			stdout.put("Product Number: ",(type Product[ebx]).itemNum,nl);
+			stdout.put(prompt);	
+		endif;
+		
+
+
+endfor; 
+end getSelect;	
+
+
+//++++++++++++++++++  printInvent procedure
+
+procedure printInvent(min: int32; max: int32; var invent: Product);
+begin printInvent;
+
+//stdout.put(nl,"INSIDE PRINT INVENTORY",nl);
+for( mov( 1, ecx ); ecx <= max; add(1, ecx )) do
+	array.index( ebx, itemArray , ecx);
+	stdout.put(nl,(type Product[ebx]).itemName,nl,"Selection Number ", (type Product[ebx]).itemNum ,nl
+	"In-Stock: ",(type Product[ebx]).inStock,"  Price: ",(type Product[ebx]).itemPrice,nl);
+endfor; 
+
+end printInvent;
+
+
+//+++++++++++++++++++++ payHandler procedure 
+procedure payHandler(prompt: string; price: int32);
+var 
+	change: int32; 
+	pay: int32;
+
+begin payHandler;
+mov(0, change);
+mov(0, pay);
+//stdout.put(prompt);
+forever
+	forever
+	try
+		
+	 	mov(0, eax); 
+		stdout.put(prompt);
+		stdin.flushInput();
+		stdin.geti32();
+		unprotected
+		//execute for sufficient funds
+		if ((type int32 eax) >= price)then	
+		
+			mov(eax, pay);		
+			sub(price, eax);
+			mov(eax, change);
+			mov(pay, edx);
+			mov(change, ebx);
+			mov(1, ecx); 
+			stdout.put(nl,"PAYMENT SUCCESSFUL",nl); 
+			stdout.put("Change: ", change, nl);
+			break; 
+		elseif((type int32 eax) < price)then
+		//prompt user to exit payment procedure		
+		stdout.put(nl,"Insufficient Funds",nl, "Would you like to cancel your purchase? (y/n): ");
+			mov(0, eax);
+			mov(0, ebx);
+			mov(0, ecx);
+			mov(0, edx);
+		forever
+		
+			mov(0,ax);
+			stdin.readLn();
+			stdin.getc();
+			breakif( al = 'n');
+			breakif( al = 'y');
+		
+			//prompt user of error
+			stdout.put(nl, "Error, please enter only 'y' or 'n': " );
+		endfor;		
+		breakif(al = 'y');
+	
+
+		endif;
+		
+	
+	anyexception
+		//mov(0,eax); 
+		//mov(0,change);
+		//mov(0,pay);
+		stdout.put(nl,"invalid input",nl);
+	
+	endtry;
+	endfor;
+	if(al ='y')then
+	mov(0,ebx); 
+	endif;
+	breakif(al ='y'); 
+	breakif(ecx = 1); 
+	
+
+endfor; 
+end payHandler;
+
+//MAIN PROGRAM*************************************************** 
+begin vend;
+	
+
+	
+	
+	mov(stralloc(16),prodNameLd);
+	
+	//load products into Array Record
+	//item 1	
+	array.index( ebx, itemArray , 1);
+	mov(1,eax);
+	add(eax, (type Product[ebx]).itemNum);
+	mov(200, eax);
+	add(eax, (type Product[ebx]).itemPrice);
+	mov(5,eax);
+	add(eax, (type Product[ebx]).inStock);
+	//string copy
+	str.cpy("Pepsi" ,prodNameLd);
+	mov(stralloc(16),(type Product[ebx]).itemName);
+	str.cpy(prodNameLd,(type Product[ebx]).itemName);	
+	//test output 	
+	//stdout.put(nl,":",(type Product[ebx]).itemName,":",nl);
+	
+	//item 2
+	array.index( ebx, itemArray , 2);
+	mov(2,eax);
+	add(eax, (type Product[ebx]).itemNum);
+	mov(200, eax);
+	add(eax, (type Product[ebx]).itemPrice);
+	mov(5,eax);
+	add(eax, (type Product[ebx]).inStock);
+	//string copy
+	str.cpy("Mountain Dew" ,prodNameLd);
+	mov(stralloc(16),(type Product[ebx]).itemName);
+	str.cpy(prodNameLd,(type Product[ebx]).itemName);	
+	//test output 	
+	//stdout.put(nl,":",(type Product[ebx]).itemName,":",nl);
+
+
+	//item 3
+	array.index( ebx, itemArray , 3);
+	mov(3,eax);
+	add(eax, (type Product[ebx]).itemNum);
+	mov(100, eax);
+	add(eax, (type Product[ebx]).itemPrice);
+	mov(5,eax);
+	add(eax, (type Product[ebx]).inStock);
+	//string copy	
+	str.cpy("Water" ,prodNameLd);
+	mov(stralloc(16),(type Product[ebx]).itemName);
+	str.cpy(prodNameLd,(type Product[ebx]).itemName);	
+	//test output 	
+	//stdout.put(nl,":",(type Product[ebx]).itemName,":",nl);
+
+
+	//item 4
+	array.index( ebx, itemArray , 4);
+	mov(4,eax);
+	add(eax, (type Product[ebx]).itemNum);
+	mov(300, eax);
+	add(eax, (type Product[ebx]).itemPrice);
+	mov(5,eax);
+	add(eax, (type Product[ebx]).inStock);
+	//string copy
+	str.cpy("Doritos" ,prodNameLd);
+	mov(stralloc(16),(type Product[ebx]).itemName);
+	str.cpy(prodNameLd,(type Product[ebx]).itemName);	
+	//test output 	
+	//stdout.put(nl,":",(type Product[ebx]).itemName,":",nl);
+
+
+	
+	//item 5
+	array.index( ebx, itemArray , 5);
+	mov(5,eax);
+	add(eax, (type Product[ebx]).itemNum);
+	mov(75, eax);
+	add(eax, (type Product[ebx]).itemPrice);
+	mov(5,eax);
+	add(eax, (type Product[ebx]).inStock);
+	//string copy
+	str.cpy("Cookies" ,prodNameLd);
+	mov(stralloc(16),(type Product[ebx]).itemName);
+	str.cpy(prodNameLd,(type Product[ebx]).itemName);	
+	//test output 	
+	//stdout.put(nl,":",(type Product[ebx]).itemName,":",nl);
+
+	
+
+	
+		stdout.put(nl, stdio.tab, "VENDING MACHINE", nl)
+	
+
+//*******************        MAIN LOOP     ***********************
+repeat
+	    
+		//prompt user for input
+		console.cls();
+		stdout.newln();	
+		//get users selection	
+		getSelect("Please Select an Item: ", 1, 5,(type Product itemArray));
+		mov(eax, usrSelect);
+		//copy product price for temporary stoarge
+		array.index( ebx, itemArray , usrSelect);
+		stdout.put(nl,"PRICE: ",(type Product[ebx]).itemPrice, nl);
+		mov((type Product[ebx]).itemPrice, itemPrice); 
+		
+		// payment procedure call 	
+		payHandler("Please enter credits: ",itemPrice); 
+		// add items to receipt variables
+		add(cstmPay,edx);
+		add(cstmChange, ebx);
+		mov(edx, cstmPay);
+		mov(ebx, cstmChange); 
+		
+		
+
+		//set condition to execute if payment is made
+		//index inventory array
+		array.index( ebx, itemArray , usrSelect);
+		if((type Product[ebx]).inStock > 0 && (type int32 ecx) = 1)then
+			//adjust counters and inventory
+			dec( (type Product[ebx]).inStock); 
+			inc(purchaseCount);
+			
+			//copy purchase to receipt
+			array.index(ecx, cstmReceipt , purchaseCount);	
+			mov(stralloc(16),(type Product[ecx]).itemName);
+			str.cpy((type Product[ebx]).itemName,prodNameLd);
+			str.cpy(prodNameLd,(type Product[ecx]).itemName);
+			mov((type Product[ebx]).itemNum,(type Product[ecx]).itemNum);
+			mov((type Product[ebx]).itemPrice,(type Product[ecx]).itemPrice);
+			mov(total, eax);
+			add((type Product[ebx]).itemPrice, eax);
+			mov(eax, total); 
+		
+		endif;
+		
+		
+		mov(0, ebx); 
+		mov(0, eax); 
+		mov(0,edx); 
+		mov(0,ecx);
+	
+		// prompt user to continue shopping
+		stdout.put(nl,nl, "Would you like to make another purchase? (y/n): ");
+		forever
+			mov(0,ax);
+			stdin.readLn();
+			stdin.getc();
+			breakif( al = 'n');
+			breakif( al = 'y');
+		
+			//prompt user of error
+			stdout.put(nl, "Error, please enter only 'y' or 'n': " );
+		endfor;
+	
+	stdout.newln();
+	
+//condition to end main game loop
+until( al = 'n');
+
+//print receipt
+console.cls();
+stdout.put(nl, "RECEIPT",nl);
+//loop through array containing purchased items
+for( mov( 1, ecx ); ecx <= purchaseCount; add(1, ecx )) do
+	array.index( ebx, cstmReceipt, ecx);
+	stdout.put(nl,"ITEM: ", (type Product[ebx]).itemName, " Price: ",(type Product[ebx]).itemPrice);
+endfor; 
+stdout.put(nl);
+stdout.put(nl, "Total: ",total, " Payment: ",cstmPay, " Change: ", cstmChange, nl);
+//end of receipt
+stdout.put(nl,"Thanks for Shopping!",nl);
+stdin.flushInput();
+stdin.getc();	
+console.cls();
+
+end vend; 
+
+//end of program

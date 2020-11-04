@@ -1,0 +1,155 @@
+/*Program: PC11
+ * Date: 10 November 2017
+ * Name: Justin Fonseca
+ * Project: Programming Challenge 11
+ *
+ *
+ */ 
+
+
+program pc11;
+
+#include("stdlib.hhf");
+
+//declare static arrays
+static
+
+int8Array: int8[10];
+int16Array: int16[10];
+int32Array: int32[10];
+
+
+
+
+
+//procedure to display cell values of arrays
+procedure displayCell(addr: dword; numCell: uns32; typeCode: uns8);
+
+begin displayCell;
+mov(addr, eax);
+for(mov(0,ecx); ecx<=numCell; add(1,ecx))do 
+	//condition for formatting 8bit Array output
+	if(typeCode = 1) then
+		stdout.put(":",(type int8 [eax+ecx*4]));
+	//condition for formatting 16bit Array output
+	elseif (typeCode = 2) then
+		stdout.put(":", (type int16 [eax+ecx*4]));
+	//condition for formatting 32bit Array output
+	else
+		stdout.put(":", (type int32 [eax+ecx*4]));
+	endif;
+endfor; 
+stdout.put(":"); 
+end displayCell;
+
+//procedure to reset cell values to zero
+procedure resetCell(addr: dword; indexCount: uns32);
+
+begin resetCell;
+mov(0,eax);
+//move the addreses to ebx
+mov(addr, ebx);
+for(mov(0,ecx); ecx<=indexCount; add(1,ecx))do 
+//zero cell values
+	
+	mov(eax, [ebx+ecx*4]);
+endfor; 
+end resetCell;
+
+//load cell values
+procedure cellLoader(addr: dword; typeCode: uns8);
+begin cellLoader;
+mov(addr, ebx);
+for(mov(0,ecx); ecx<=9; add(1,ecx))do 
+	//condition for loading 8bit Array with random values
+	if(typeCode = 1) then
+		rand.urange(-128, 127);
+		mov( eax, [ebx+ecx*4]);
+	//condition for loading 16bit Array with random values
+	elseif (typeCode = 2) then
+		rand.urange(-32768,32767);
+		mov( eax, [ebx+ecx*4]);
+	//condition for loading 32bit Array wit random values
+	else
+		rand.urange(-50000, 50000);	
+		mov( eax, [ebx+ecx*4]);
+endif;
+endfor; 
+end cellLoader;
+
+
+
+//start main program 
+begin pc11;
+rand.randomize();
+repeat
+
+	stdout.put("ARRAY DISPLAY",nl);
+	
+	//DISPLAY INITIAL VALUES 
+	stdout.put("INITIAL VALUES",nl);
+	stdout.put("int8Array contents: "); 
+	displayCell(&int8Array,9,1); 
+	stdout.put(nl,"int16Array contents: "); 
+	displayCell(&int16Array,9,2); 
+	stdout.put(nl,"int32Array contents: "); 
+	displayCell(&int32Array,9,3); 
+
+	//LOAD ARRAYS WITH RANDOM VALUES	
+	stdout.put(nl, "ARRAYS LOADED WITH RANDOM VALUES");
+	//load  random values
+	cellLoader(&int8Array,1);
+	stdout.put(nl,"int8Array contents: "); 
+	//output random values
+	displayCell(&int8Array,9,1);
+	//load random values
+	cellLoader(&int16Array,2);
+	//output random values
+	stdout.put(nl,"int16Array contents: "); 
+	displayCell(&int16Array,9,2);
+	//load random values
+	cellLoader(&int32Array,3);
+	//output random values
+	stdout.put(nl,"int32Array contents: "); 
+	displayCell(&int32Array,9,3);
+
+	//RESET THE CELL VALUES TO ZERO
+	// reset values of arrays 
+	stdout.put(nl, "ARRAY CELLS RESET");
+	//zero the int8 Array
+	resetCell(&int8Array,9);
+	//display after zeroing
+	stdout.put(nl,"int32Array contents: "); 
+	displayCell(&int8Array,9,3);
+
+	//zero the int16 Array
+	resetCell(&int16Array,9);
+	//display after zeroing
+	stdout.put(nl,"int32Array contents: "); 
+	displayCell(&int16Array,9,3);
+
+	//zero the int32 Array
+	resetCell(&int32Array,9);
+	//display after zeroing 
+	stdout.put(nl,"int32Array contents: "); 
+	displayCell(&int32Array,9,3);
+
+	//prompt to continue or exit
+	stdout.put(nl,nl, "Would you like to startover? (y/n): ");
+		forever
+			mov(0,ax);
+			stdin.readLn();
+			stdin.getc();
+			breakif( al = 'n');
+			breakif( al = 'y');
+		
+			//prompt user of error
+			stdout.put(nl, "Error, please enter only 'y' or 'n': " );
+		endfor;
+
+
+until(al = 'n');
+	
+	stdout.put(nl);
+end pc11;
+//end main program 

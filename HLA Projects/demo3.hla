@@ -1,0 +1,262 @@
+/*
+ * Program: demo3
+ *
+ * written by			Justin Fonseca
+ * created on			26 October 2017
+ * last modified on		27 October 2017
+ *
+ * function: Demonstrate bitwise operators
+ *
+ *  Notes: exceptions on getUns8 and getInt8 have not been throughly tested
+ * 
+ * 	PART FOUR: xor zeroing output has not been tested for authenticity  
+ */
+
+
+
+
+program demo3;
+
+#include("stdlib.hhf");
+//forward declared procedures
+procedure getUns8(prompt: string; min: uns8; max: uns8);@forward;
+procedure getInt8(prompt: string; min: int8; max: int8);@forward;
+
+procedure getUns8(prompt: string; min: uns8; max: uns8);
+begin getUns8;
+
+forever
+	stdout.put(prompt);
+	
+
+	try
+		//clear values
+		mov(0,al);
+		//flushInput incase of exception
+		stdin.flushInput();
+		//get 8 bit input 
+		stdin.getu8();
+		unprotected
+		//condition to exit loop
+			if((type uns8 al) >= min && (type uns8 al) <= max) then
+			//test line below			
+			//stdout.put(nl,"getUns8: EVAL PASSED",nl); 
+			break;
+			
+			else
+	//prompt if value out of range
+	stdout.put("enter a value between ", min, " and ", max, nl);
+			endif;
+	anyexception
+		stdout.put("invalid input",nl);	
+			
+	
+
+	endtry;
+endfor;
+end getUns8;
+
+procedure getInt8(prompt: string; min: int8; max: int8);
+begin getInt8;
+
+forever
+	stdout.put(prompt);
+	
+
+	try
+		//clear values
+		mov(0,al);
+		//flushInput incase of exception
+		stdin.flushInput();
+		//get 8 bit input 
+		stdin.geti8();
+		unprotected
+		//condition to exit loop
+			if((type int8 al) >= min && (type int8 al) <= max) then
+			//test line below			
+			//stdout.put(nl,"getUns8: EVAL PASSED",nl); 
+			break;
+			
+			else
+	//prompt if value out of range
+	stdout.put("enter a value between ", min, " and ", max, nl);
+			endif;
+	anyexception
+		stdout.put("invalid input",nl);	
+			
+	
+
+	endtry;
+endfor;
+end getInt8;
+
+
+
+procedure showBit(someBin: uns8); 
+begin showBit;
+mov(someBin, BH);
+stdout.put("%");
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+stdout.put("_");
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+
+end showBit; 
+
+//main program
+begin demo3;
+	// PART ONE
+	mov(0,ah);
+	getUns8("Enter a value in range (0..255): ",0,255);
+	stdout.put("AL: DEC: ", (type uns8 al), " Binary: ");
+	push(ax);	
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+	push(ax);
+	not(al);
+	stdout.put("Bitwise complement[Decimal]: ",(type uns8 al),nl); 
+	stdout.put("Bitwise complement[Binary]: ");
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+	stdout.put("PRESS ENTER TO CONTINUE:");
+	stdin.readLn();
+	stdout.put(nl);
+	console.cls();
+	
+	//Part TWO	
+	stdin.flushInput();
+	getInt8("Enter a value in range (-128..127):", -128,127);
+	stdout.put(nl,"input[decimal]: ", (type int8 al), nl); 
+	stdout.put("input[binary]: ");
+	push(ax);
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+	
+	push(ax);
+	push(bx);
+	
+	mov(0,bl);
+	mov(al, BH);
+	for(mov(al,cl); cl <= al; dec(cl))do
+	shr(1, BH); 
+	lahf();
+	if(and( %0000_0001, AH ) = 1)then
+	add(1,bl);
+	endif;
+	endfor;
+	stdout.put(nl,"Number of Bits set: ", (type int8 bl),nl);
+	pop(bx);
+	pop(ax);
+	stdout.put(nl);
+	
+	//Part THREE
+	stdout.put("PRESS ENTER TO CONTINUE:");
+	stdin.readLn();
+	stdout.put(nl);
+	stdin.flushInput();
+	console.cls();
+	mov(0,ah);
+	getUns8("Enter a value in range (0..255): ",0,255);
+	stdout.put("AL: DEC: ", (type uns8 al), " Binary: ");
+	push(ax);	
+	showBit(al);
+	pop(ax);
+	push(ax);
+	stdout.put(nl);
+	and(%1111_0000,al); 
+	stdout.put("Lower nibble cleared[binary]: ");
+	showBit(al);
+	pop(ax);
+	push(ax);
+	stdout.put(nl);
+	and(%0000_1111,al); 
+	stdout.put("Upper nibble cleared[binary]: ");
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+
+	//Part Four
+	stdout.put("PRESS ENTER TO CONTINUE:");
+	stdin.readLn();
+	stdout.put(nl);
+	stdin.flushInput();
+	console.cls();
+	getInt8("Enter a value in range (-128..127):", -128,127);
+	stdout.put(nl,"input[decimal]: ", (type int8 al), nl); 
+	stdout.put("input[binary]: ");
+	push(ax);
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+	push(ax);
+	xor(%1111_1111,al);
+	stdout.put("XOR bitwise complement[binary]: ");
+	showBit(al);	
+	pop(ax);
+	push(ax);
+	
+	mov(0,bl);
+	mov(al, BH);
+	for(mov(al,cl); cl <= al; dec(cl))do
+	shr(1, BH); 
+	lahf();
+	if(xor( %0000_0001, AH ) = 1)then
+	add(1,bl);
+	endif;
+	endfor;
+	mov(bl,al);
+	stdout.put(nl,"XOR Bitwise ZERO[binary]: ");
+	showBit(al);
+
+
+
+
+	pop(ax);
+
+
+	stdout.put(nl);
+
+	
+	
+
+end demo3;

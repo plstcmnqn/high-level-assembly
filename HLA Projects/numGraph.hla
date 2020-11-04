@@ -1,0 +1,228 @@
+/*
+ * Program: numGraph
+ *
+ * written by			Justin Fonseca
+ * created on			11 October 2017
+ * last modified on		12 October 2017
+ *
+ * function: take in four numbers from user input
+ * display in decimal
+ * graph the numbers individually
+ * compute and display average
+ * compute and display minimum and maximum number from set
+ * push and pop will be used to preserve values and avoid variable use. 
+ */
+
+
+
+
+program numGraph;
+
+#include("stdlib.hhf");
+//forward declared procedures
+procedure getUns8(prompt: string; min: uns8; max: uns8);@forward;
+procedure showGraph(number: uns8);@forward;
+
+//first function
+procedure getUns8(prompt: string; min: uns8; max: uns8);
+begin getUns8;
+forever
+
+	stdout.put(prompt);
+	
+
+	try
+		//clear values
+		mov(0,al);
+		//flushInput incase of exception
+		stdin.flushInput();
+		//get 8 bit input 
+		stdin.getu8();
+		unprotected
+		//condition to exit loop
+			if((type uns8 al) >= min && (type uns8 al) <= max) then
+			//test line below			
+			//stdout.put(nl,"getUns8: EVAL PASSED",nl); 
+			break;
+			
+			else
+	//prompt if value out of range
+	stdout.put("enter a value between ", min, " and ", max, nl);
+			endif;
+	anyexception
+		stdout.put("invalid input",nl);	
+			
+	
+
+	endtry;
+	
+endfor;
+end getUns8;
+
+//second function
+procedure showGraph(number: uns8);
+begin showGraph;
+	//move register values	
+	push(cx);
+	//display number
+	stdout.put(number, " ");
+	//iterate and print by decrements of 10 
+	for(mov(number,cl); cl >= 10; sub(10, cl))do
+	stdout.put("*");
+	//additional break
+	breakif(cl < 10);
+	endfor;
+	stdout.newln();
+	
+	//restore cx register value
+	pop(cx);
+
+end showGraph;
+
+//Procedure to compute average
+procedure totalAndAverage(one: uns8; two:uns8; three:uns8; four:uns8);
+begin totalAndAverage;
+	stdout.put("First Value: ",(type uns8 al),nl);
+stdout.put("Second Value: ",(type uns8 bl),nl);
+stdout.put("Third Value: ",(type uns8 cl),nl);
+stdout.put("Fourth Value: ",(type uns8 dl),nl);
+
+	//move registers to stack	
+	push(ax);
+	push(dx);
+	mov(0,ah);
+	mov(0,bh);
+	mov(0,ch);
+	mov(0,dh); 
+	add(bx, ax);
+	add(cx, ax);
+	add(dx, ax);
+	//zero extend
+	mov(0,dx);
+	//compute average
+	div(4,dx:ax);	
+	//display average
+	stdout.put("The Average is: ", (type uns16 ax), nl); 
+	//restore registers	
+	pop(dx);
+	pop(ax);
+
+
+end totalAndAverage;
+
+
+//fourth function
+procedure minNum(one: uns8; two:uns8; three:uns8; four:uns8);
+begin minNum;	
+	if(al < bl && al < cl && al < dl)then
+	stdout.put("min: ", (type uns8 al),nl);
+	elseif(bl < cl && bl < dl)then
+	stdout.put("min: ", (type uns8 bl),nl);
+	elseif(cl < dl)then 
+	stdout.put("min: ", (type uns8 cl),nl);
+	else
+	stdout.put("min: ", (type uns8 dl),nl);
+	endif; 
+
+end minNum;
+
+//fifth
+procedure maxNum(one: uns8; two:uns8; three:uns8; four:uns8);
+begin maxNum;
+	if(al > bl && al > cl && al > dl)then
+	stdout.put("MAX: ", (type uns8 al),nl);
+	elseif(bl > cl && bl > dl)then
+	stdout.put("MAX: ", (type uns8 bl),nl);
+	elseif(cl > dl)then
+	stdout.put("MAX: ", (type uns8 cl),nl);
+	else
+	stdout.put("MAX: ", (type uns8 dl),nl);
+	endif; 
+
+end maxNum;
+
+
+//main program
+begin numGraph;
+
+repeat 
+mov(0,ax);
+mov(0,bx);
+mov(0,cx);
+mov(0,dx);
+
+console.cls();
+stdout.put(nl,"Welcome to numGraph",nl); 
+
+
+//first procedure call for input
+getUns8("Enter first number [1..255]",1,255);
+//preserve eax value
+push(ax);
+//second procedure call for input
+getUns8("Enter second number [1..255]",1,255);
+//move second input to bl register
+mov(al,bl);
+//preserve bx value
+push(bx);
+//third procedure call for input
+getUns8("Enter third number [1..255]",1,255);
+//move third input to cl register
+mov(al,cl);
+//preserve cx value
+push(cx);
+//fourth procedure call for input
+getUns8("Enter fourth number [1..255]",1,255);
+//move fourth input to dl register
+mov(al,dl);
+//restore original values of 16 bit registers 
+pop(cx);
+pop(bx);
+pop(ax);
+
+//output all values in decimal
+stdout.put(nl); 
+stdout.put("First Value: ",(type uns8 al),nl);
+stdout.put("Second Value: ",(type uns8 bl),nl);
+stdout.put("Third Value: ",(type uns8 cl),nl);
+stdout.put("Fourth Value: ",(type uns8 dl),nl);
+
+//procedure calls to graph numbers
+showGraph(al);
+showGraph(bl);
+showGraph(cl);
+showGraph(dl);
+
+
+
+
+//procedure call for averge of numbers
+totalAndAverage(al,bl,cl,dl);
+
+//procedure call for minimum number
+
+minNum(al,bl,cl,dl);
+
+//procedure call for maximum number
+maxNum(al,bl,cl,dl);
+	
+	stdout.put(nl,"Would you like to start over? (y/n):");
+	forever
+		stdin.flushInput();
+		stdin.getc();
+		breakif( al = 'n');
+		breakif( al = 'y');
+		
+		//prompt user of error
+		stdout.put("Error, please enter only 'y' or 'n': " );
+		endfor;
+		if(al ='y')then
+		console.cls();
+		endif; 
+
+
+
+
+until(al = 'n');  
+
+end numGraph;

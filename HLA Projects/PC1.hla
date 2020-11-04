@@ -1,0 +1,45 @@
+/*
+ * Programming Challenge# 1
+ *
+ * written by			Justin Fonseca
+ * created on			23 August 2017
+ * last modified on		24 August 2017
+ *
+ * Program will take two user inputs(string, unsigned 8-bit) store them in memory, provide formatted output,
+ * and free memory associated with the string. 
+ */
+ 
+ program Greeting; 
+ 
+ #include("stdlib.hhf");
+ #include("stdio.hhf"); 
+ // variable declaration 
+ static 
+	userName: string:= ""; 
+	butteTime: uns8; 
+ //begin program
+ begin Greeting;
+	//greet user
+	stdout.put(nl, "Hello", nl); 
+	
+	//prompt user for name
+	stdout.put("What is your name? ");
+	stdin.a_gets();
+	
+	//move string input from eax and store in userName
+	mov(eax, userName); 
+	
+	//prompt user input  
+	stdout.put(nl, "How many years have you attended Butte College? "); 
+	stdin.get(butteTime);
+	
+	//output formatted user input
+	stdout.put(nl, "Nice to meet you, ", userName, ".", nl, "You have been at Butte College for ", butteTime, " years. Awesome!", nl); 
+	
+	stdout.put(nl); 
+	//stdio.bell();
+	//free memory associated with string
+	strfree(userName);
+	
+//end program	
+ end Greeting; 

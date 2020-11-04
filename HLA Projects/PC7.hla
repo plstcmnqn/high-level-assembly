@@ -1,0 +1,93 @@
+/*
+ * Date: 9 Oct 2016
+ * Name: Justin Fonseca
+ * Project: Programming Challenge 7
+ */ 
+ // single line comment
+ program PP7; 
+
+#include ( "stdlib.hhf" );
+
+procedure getUns8(prompt: string; min: uns8; max: uns8); @returns("al");@forward;
+procedure showGraph(val1: uns8; val2: uns8; val3: uns8; val4: uns8); @forward; 
+
+procedure getUns8(prompt: string; min: uns8; max: uns8);
+begin getUns8;
+forever
+	stdout.put(prompt);
+
+	try
+		stdin.flushInput();
+		stdin.getu8();
+		unprotected
+			if(al >= min && al <= max) then
+				break;
+			else
+				stdout.put("enter a value between ", min, " and ", max, nl);
+			endif;
+	anyexception
+		stdout.put("invalid input",nl);	
+	endtry;
+endfor;
+end getUns8;
+
+procedure showGraph(val1: uns8; val2: uns8; val3: uns8; val4: uns8);
+begin showGraph;
+		//stdout.put(nl, val1, nl);
+		//stdout.put(nl, val2, nl);
+		//stdout.put(nl, val3,nl);
+		//stdout.put(nl, val4,nl);
+		
+	while( val1 >= 10 ) do
+ 		stdout.put(" * ");
+ 		sub(10,val1);
+ 	endwhile;
+	stdout.put(nl);
+	while( val2 >= 10 ) do
+ 		stdout.put(" * ");
+ 		sub(10,val2);
+ 	endwhile;
+	stdout.put(nl);
+	while( val3 >= 10 ) do
+ 		stdout.put(" * ");
+ 		sub(10,val3);
+ 	endwhile;
+	stdout.put(nl);
+	while( val4 >= 10 ) do
+ 		stdout.put(" * ");
+ 		sub(10,val4);
+ 	endwhile;
+	stdout.put(nl);
+	
+ 
+
+
+end showGraph;
+
+begin PP7;
+
+	getUns8("Enter a number (1-255) ", 1, 255);
+	mov(al,dl);
+	push(dx);
+	
+	getUns8("Enter a number (1-255) ", 1, 255);
+	mov(al,cl);
+	push(cx);
+	
+	getUns8("Enter a number (1-255) ", 1, 255);
+	mov(al,bl);
+	push(bx);
+
+	getUns8("Enter a number (1-255) ", 1, 255);
+	push(ax);	
+	 
+	//stdout.put(nl, (type uns16 ax),nl);
+	
+	//mov(0,ax);
+	//stdout.put(nl, (type uns16 ax),nl);
+	//pop(ax);
+	//stdout.put(nl, (type uns16 ax),nl);
+	showGraph(al, bl,cl, dl);
+
+
+end PP7;

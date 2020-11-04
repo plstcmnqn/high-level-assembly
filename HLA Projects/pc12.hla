@@ -1,0 +1,190 @@
+/*
+ 
+ *
+ * written by			Justin Fonseca
+ * created on			17 November 2017
+ * last modified on		17 November 2017
+ *
+ */
+
+
+program pc12;
+
+
+#include("stdlib.hhf");
+
+
+static
+	mArray: dword;
+	mArraySize: uns32;
+	mArrayType: uns32;
+
+
+
+procedure displayCell(address: dword; numCell: uns32; typeCode: uns32);
+
+begin displayCell;
+if (typeCode == 1) then
+		stdout.put("int8 -> ");
+	elseif (typeCode == 2) then 
+		stdout.put("int16-> ");
+	else
+		stdout.put("int32-> ");
+	endif;
+	
+	mov(address, eax);
+	for (mov(0, ecx); ecx<numCell; inc(ecx)) do
+		if (typeCode == 1) then
+			stdout.put((type uns8 cl),":",(type uns8 [eax + ecx * 1]), " ");
+		elseif (typeCode == 2) then 
+			stdout.put((type uns16 [eax + ecx * 2]), " ");
+		else
+			stdout.put((type uns32 [eax + ecx * 4]), " ");
+		endif;
+	endfor;
+	stdout.newln();
+
+	stdout.put("LARGEST -> ");
+	if (typeCode == 1) then
+		stdout.put((type uns8 [eax + ecx * 1]), " ");
+	elseif (typeCode == 2) then 
+		stdout.put((type uns16 [eax + ecx * 2]), " ");
+	else
+		stdout.put((type uns32 [eax + ecx * 4]), " ");
+	endif;
+	stdout.newln();
+
+ 
+end displayCell;
+
+procedure editCell(address: dword; index: uns32; typeCode:uns32);
+begin editCell;
+	stdin.flushInput();
+	if(typeCode = 1)then
+	stdout.put("Enter a new int8 value: ");
+	stdin.flushInput();
+	stdin.geti8();
+	mov(address, ebx);
+	mov(index, ecx);
+	mov(ax, [ebx + ecx]);
+
+
+	elseif(typeCode = 2)then
+	stdout.put("Enter a new int16 value: ");
+	stdin.flushInput();
+	stdin.geti16();
+	mov(address, ebx);
+	mov(index, ecx);
+	mov(ax, [ebx + ecx * 2]);
+
+	elseif(typeCode = 2)then
+	stdout.put("Enter a new int32 value: ");
+	stdin.flushInput();
+	stdin.geti32();
+	mov(address, ebx);
+	mov(index, ecx);
+	mov(ax, [ebx + ecx * 4]);
+	endif; 
+
+end editCell;
+
+procedure computeLargest(address: dword; size: uns32; typeCode: uns32);
+begin computeLargest;
+	
+	mov(address, ebx);
+	
+	
+	mov(0, edx);
+	if (typeCode == 1) then
+		mov((type uns8 [ebx]), dl);
+	elseif (typeCode == 2) then
+		mov((type uns16 [ebx]), dx);
+	else
+		mov((type uns32 [ebx]), edx);
+	endif;
+	
+	
+	for (mov(1, ecx); ecx<size; inc(ecx)) do
+		if (typeCode == 1) then
+			if ((type uns8 [ebx + ecx * 1]) > dl) then
+				mov((type uns8 [ebx + ecx * 1]), dl);
+			endif;
+		elseif (typeCode == 2) then
+			if ((type uns16 [ebx + ecx * 2]) > dx) then
+				mov((type uns16 [ebx + ecx * 2]), dx);
+			endif;
+		else
+			if ((type uns32 [ebx + ecx * 4]) > edx) then
+				mov((type uns32 [ebx + ecx * 4]), edx);
+			endif;
+		endif;
+	endfor;
+	
+	
+	if (typeCode == 1) then
+		mov(dl, (type uns8 [ebx + ecx * 1]));
+	elseif (typeCode == 2) then
+		mov(dx, (type uns16 [ebx + ecx * 2]));
+	else
+		mov(edx, (type uns32 [ebx + ecx * 4]));
+	endif;
+
+end computeLargest;
+
+	
+begin pc12;
+rand.randomize();
+
+	stdout.put("How many cells to use?: ");
+	stdin.getu32();
+	mov(eax, mArraySize);
+	
+	
+	stdout.put("What dataype[1: int8, 2:int16, 3:int32]: ");
+	stdin.flushInput();
+	stdin.getu32();
+	mov(eax, mArrayType);
+	
+	
+	mov(mArraySize, eax);
+	inc(eax);
+	if (mArrayType == 2) then
+		mul(2, eax);
+	elseif (mArrayType == 3) then
+		mul(4, eax);
+	endif;
+	
+	
+	stdout.put("Allocating ", (type uns32 eax), " bytes...", nl);
+	mem.zalloc(eax);
+	mov(eax, mArray);
+	
+	
+	forever
+		
+		stdout.newln();
+	
+		
+		computeLargest(mArray, mArraySize, mArrayType);
+		displayCell(mArray, mArraySize, mArrayType);
+		displayCell(mArray, mArraySize, mArrayType);
+
+		stdout.put("Would you like to edit a cell [y/n]? ");
+		stdin.flushInput();
+		breakif(chars.toUpper(stdin.getc()) == 'N');
+		mov(mArraySize, edx);
+		sub(1,edx);
+		stdout.put("Enter Cell# to edit [0..",(type uns32 edx),"]");
+		stdin.geti32(); 
+		editCell(mArray, (type int32 eax), mArrayType);
+	
+	endfor;
+	
+	mem.free(mArray);
+	stdout.put(nl,"MEMORY FREED!",nl);
+	
+
+end pc12;
+
+
+//end

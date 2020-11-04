@@ -1,0 +1,204 @@
+/*
+ * HLA Starter
+ *
+ * written by			Justin Fonseca
+ * created on			5 December 2017
+ * last modified on		7 December 2017
+ *
+ *
+ *
+ */
+program pc13;
+
+#include ("stdlib.hhf")
+
+/* forward declarations */
+procedure getInt8 (prompt: string; min: int8; max: int8); @returns("al"); @forward;
+
+/* procedure definitions */
+procedure getInt8 (prompt: string; min: int8; max: int8);
+begin getInt8;
+
+    push(edx);
+    push(ecx);
+    push(ebx);
+    forever
+        try
+            stdout.put(nl, prompt, " (", min, " to ", max, "): ");
+            stdin.flushInput();
+            stdin.geti8();
+            unprotected
+                cmp((type int8 al), min);
+                jl INT8_BAD;
+                cmp((type int8 al), max);
+                jg INT8_BAD;
+                break;
+                INT8_BAD:
+                    stdout.put(nl, "VALUE OUT OF RANGE.");
+        anyexception
+            stdout.put(nl, "Invalid input.");
+        endtry;
+    endfor;
+    pop(ebx);
+    pop(ecx);
+    pop(edx);
+
+end getInt8;
+
+/* program variables and main */
+
+static
+    input: int8;
+    isPrime: boolean;
+    
+begin pc13;
+
+    MAINLOOP1_:
+        stdout.put("FUN WITH NUMBERS");
+        console.cls();
+        
+        mov(getInt8("Please enter an int8", -127, 127), input);
+        
+        stdout.put(nl, "What do you want to do with your input value?", nl);
+        stdout.put("1. Test to see if it is negative", nl);
+        stdout.put("2. Test to see if it is even", nl);
+        stdout.put("3. Reverse its sign", nl);
+        stdout.put("4. Test to see if it is prime", nl);
+        stdout.put("your choice: ");
+        getInt8("your choice", 1, 4);
+        
+        console.cls();
+	//check user selection
+        cmp(al, 1);
+            je NEGATIVE_;
+        cmp(al, 2);
+            je EVEN_;
+        cmp(al, 3);
+            je REVERSE_;
+
+   //CHECK PRIME
+     cmp(input, 0);
+       jge PRIMESTEP1_;
+     stdout.put("Reversing the sign.", nl, nl);
+   mov(input, al);
+   not(al);
+   add(1, al);
+   mov(al, input);
+       PRIMESTEP1_:
+   mov(true, isPrime);
+   cmp(input, 2);
+       jge PRIMESTEP2_;
+       mov(false, isPrime);
+           PRIMESTEP2_:
+  for (mov(2, cl); cl<input; inc(cl)) do
+    mov(0, ah);
+    mov(input, al);
+    div(cl, ax);
+    cmp(ah, 0);
+        jne PRIMESTEP3_;
+    mov(false, isPrime);
+        PRIMESTEP3_:
+    endfor;
+    
+    cmp(isPrime, true);
+        jne PRIMESTEP4_;
+    stdout.put(input, " is a prime number.", nl);
+        jmp END_;
+        PRIMESTEP4_:
+    stdout.put(input, " is not a prime number.", nl);
+        jmp END_;
+
+            NEGATIVE_:
+        cmp(input, 0);
+            jge PART_;
+        stdout.put(input, " is a negative.", nl);
+            jmp END_;
+            PART_:
+        stdout.put(input, " is greater than or equal to zero.", nl);
+            jmp END_;
+
+	//EVEN NUMBER      
+	EVEN_:
+   	mov(0, ah);
+    	mov(input, al);
+   	idiv(2, ax);
+    	cmp(ah, 0);
+        jne ODD_;
+	stdout.put(input, " is an even number.", nl);
+        jmp END_;
+        
+	//ODD NUMBER
+	ODD_:
+        stdout.put(input, " is an odd number.", nl);
+        jmp END_;
+ 	
+	//REVERSE THE SIGN
+        REVERSE_:
+        mov(input, al);
+    	not(al);
+    	add(1, al);
+    	stdout.put(input, " sign reversed is ", (type int8 al), nl);
+        jmp END_;
+
+        //END OF LABEL
+	END_:
+        //CHECK IF USER IS DONE
+        stdout.put(nl, nl, "Go again (y/n)? ");
+        stdin.flushInput();
+        //FORCE CHARACTER TO UPPER CASE
+        chars.toUpper(stdin.getc());
+        
+        cmp(al, 'N');
+        jne MAINLOOP1_;
+        jmp PART3_;
+        
+        
+        
+        PART3_:
+        
+    MAINLOOP2_:
+        
+        console.cls();
+	
+        //PROMPT USER FOR INPUT
+        mov(getInt8("Please enter an int8", 1, 20), input);
+        //COUNT UP
+        stdout.put(nl, "counting up...", nl);
+        mov(1,cl);
+            COUNTUP_:
+        cmp(cl, input);
+            jg COUNTDOWN;
+        stdout.put((type uns8 cl), " ");
+        inc(cl);
+            jmp COUNTUP_;
+        stdout.newln();
+            COUNTDOWN:
+            
+        stdout.put(nl, "counting down...", nl);
+        mov(input, cl);
+        COUNTDOWN_:
+        cmp(cl, 0);
+            je COUNTEND_;
+        stdout.put((type uns8 cl), " ");
+        dec(cl);
+            jmp COUNTDOWN_;
+        stdout.newln();
+            COUNTEND_:
+        
+        stdout.put(nl, nl, "Go again (y/n)? ");
+        stdin.flushInput();
+        
+        // force character to uppercase
+        chars.toUpper(stdin.getc());
+        
+        cmp(al, 'N');
+        jne MAINLOOP2_;
+            //break;
+        jmp PART4_;
+        
+    ENDFOR2_:
+        
+        PART4_:
+    
+end pc13;
+

@@ -1,0 +1,125 @@
+/*Program: Guessing Game
+ * Date: 14 Sept 2016
+ * Name: Justin Fonseca
+ * Project: Programming Challenge 4
+ */ 
+ 
+ program guessgame; 
+
+
+#include ("stdlib.hhf");
+
+
+
+//static variables declared
+static
+	randomNumber: uns32;
+	usrNum: uns32;
+	usrPos: int8;
+
+//procedure defined
+procedure getUns32;@forward;
+procedure getUns32;
+begin getUns32;
+
+forever
+		
+	stdout.put("Enter a number between [1,100]: ");
+
+		try
+			stdin.flushInput();
+			stdin.getu32();
+			unprotected
+			//break;
+		anyexception
+			stdout.put("invalid input",nl);	
+			mov(0, eax);
+		endtry;
+		
+		if(eax > 100 || eax < 1)then
+			stdout.put("unsupported value", nl);
+				
+		elseif(eax < 101 && eax > 0)then
+			break; 		
+		endif;
+	
+endfor; 
+end getUns32;	
+	
+
+ 
+ begin guessgame;
+	//see random generator
+	rand.randomize();
+	
+		stdout.put(nl,"Welcome to the Guessing Game", nl)
+		stdout.newln();
+		stdout.put("Press ENTER to begin");
+		stdin.getc(); 
+		stdin.flushInput(); 
+		console.cls();
+	//begin main game loop
+	repeat
+	//set rand range
+		rand.urange(1, 100);
+		mov(eax, randomNumber);
+		
+		mov(0, usrPos);
+		//begin guessing loop	 
+		repeat
+			stdout.newln();
+			getUns32();
+			mov(eax, usrNum);
+			stdout.put ("Your Guess: ",usrNum, nl);
+	
+			
+			//usrNum too high
+			if( eax > randomNumber)then
+			stdout.newln();
+			stdout.put("too high, You are on attempt: ", usrPos,"/10", nl);
+			
+			
+			//usrNum too low
+			elseif( eax < randomNumber)then
+			stdout.newln();
+			stdout.put("too low, You are on attempt: ", usrPos,"/10", nl);
+			
+			
+			//eax == randomNumber
+			elseif( eax == randomNumber)then
+			stdout.put("Correct!, the hidden number was ");
+				break;
+			
+			endif;
+			
+			inc(usrPos);
+			
+		until (usrPos == 10);
+		
+		if(usrPos == 10 && eax != randomNumber)then
+			stdout.put("You're out of attempts, the number was: ",randomNumber);
+		endif;
+		//close guessing loop
+		
+		
+		// prompt user to continue game
+		stdout.put(nl,nl, "Do you want to play again? (y/n):");
+		
+		forever
+			stdin.readLn();
+			stdin.getc();
+			breakif( al = 'n');
+			breakif( al = 'y');
+		
+			//prompt user of error
+			stdout.put("Error, please enter only 'y' or 'n': " );
+		endfor;
+	
+	stdout.newln();
+	
+	//condition to end main game loop
+	until( al = 'n');
+	stdout.put("Goodbye!");
+	
+
+ end guessgame;

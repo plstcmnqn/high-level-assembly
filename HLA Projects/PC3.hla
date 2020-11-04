@@ -1,0 +1,118 @@
+/*
+ * Date: 7 Sept 2016
+ * Name: Justin Fonseca
+ * Project: Programming Challenge 3
+ */ 
+ 
+ program PC3; 
+
+#include ("stdlib.hhf");
+ 
+ begin PC3;
+
+	stdout.put
+	(
+		nl, 
+		stdio.tab 
+	);
+	
+	stdout.newln();
+	
+	stdout.put
+	( 
+		"Please enter 4 numbers separately: "
+	);
+	
+	stdin.getu8();
+	mov(al, dl);
+	stdin.getu8();
+	mov(al, cl);
+	stdin.getu8();
+	mov(al, bl);
+	stdin.getu8();
+	stdout.newln();
+	
+	stdout.put((type uns8 dl),nl);
+	stdout.put((type uns8 cl),nl);
+	stdout.put((type uns8 bl),nl);
+	stdout.put((type uns8 al),nl);
+	stdout.put(al,nl);
+	stdout.put(bl,nl);
+	stdout.put(cl,nl);
+	stdout.put(dl,nl);
+	
+	stdout.newln();
+	
+	
+	stdout.put 
+	(
+		"Please enter 4 numbers again: "
+	);
+	
+	
+	stdin.getu16();
+	mov(ax, dx);
+	stdin.getu16();
+	mov(ax, cx);
+	stdin.getu16();
+	mov(ax, bx);
+	stdin.getu16();
+	
+	
+	stdout.put(ax,nl);
+	stdout.put(bx,nl);
+	stdout.put(cx,nl);
+	stdout.put(dx,nl);
+	stdout.put((type uns16 ax),nl);
+	stdout.put((type uns16 bx),nl);
+	stdout.put((type uns16 cx),nl);
+	stdout.put((type uns16 dx),nl);
+	
+	stdout.put((type uns8 dl),nl);
+	stdout.put((type uns8 cl),nl);
+	stdout.put((type uns8 bl),nl);
+	stdout.put((type uns8 al),nl);
+	
+	stdout.put(al,nl);
+	stdout.put(bl,nl);
+	stdout.put(cl,nl);
+	stdout.put(dl,nl);
+	
+	
+	stdout.put 
+	(
+		"Please enter 4 numbers again: "
+	);
+	
+	
+	stdin.getu32();
+	mov(eax, edx);
+	stdin.getu32();
+	mov(eax, ecx);
+	stdin.getu32();
+	mov(eax, ebx);
+	stdin.getu32();
+	
+	stdout.put(eax,nl);
+	stdout.put(ebx,nl);
+	stdout.put(ecx,nl);
+	stdout.put(edx,nl);
+	stdout.put((type uns16 ax),nl);
+	stdout.put((type uns16 bx),nl);
+	stdout.put((type uns16 cx),nl);
+	stdout.put((type uns16 dx),nl);
+	
+	stdout.put((type uns8 dl),nl);
+	stdout.put((type uns8 cl),nl);
+	stdout.put((type uns8 bl),nl);
+	stdout.put((type uns8 al),nl);
+	
+	stdout.put(al,nl);
+	stdout.put(bl,nl);
+	stdout.put(cl,nl);
+	stdout.put(dl,nl);
+	
+	
+	
+	
+ end PC3;

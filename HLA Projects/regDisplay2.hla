@@ -1,0 +1,130 @@
+/*
+ * 
+ *
+ * written by			Justin Fonseca
+ * created on			9 September 2017
+ * last modified on		9 September 2017
+ *
+ * This program will store user input in registers, and display the stored values of the registers in both hexadecimal and decimal format. 
+ *
+ */
+
+program regDisplay;
+
+#include ("stdlib.hhf");
+
+begin regDisplay;
+//greeting 
+console.cls();
+stdout.put("Register Evaulation",nl);
+stdout.put("Press ENTER to continue: ");
+stdin.getc(); 
+console.cls(); 
+ stdin.flushInput(); 
+//begin main loop
+repeat	
+	//    8 BIT REGISTERS SECTION
+	//prompt take user input into 4-8bit registers
+	stdout.put("8 bit registers",nl);
+	stdout.put("Enter first value in range [0..255]: "); 
+	stdin.getu8();
+	mov(al, dl);
+	stdout.put("Enter second value in range [0..255]: "); 
+	stdin.getu8();
+	mov(al, cl);
+	stdout.put("Enter third value in range [0..255]: "); 
+	stdin.getu8();
+	mov(al, bl);
+	stdout.put("Enter for value in range [0..255]: "); 
+	stdin.getu8();
+	//output registers values in decimal and hex	
+	stdout.put("DL in hexadecimal: ",dl," DL in decimal: ", (type uns8 dl), nl); 	
+	stdout.put("CL in hexadecimal: ",cl," CL in decimal: ", (type uns8 cl), nl);
+	stdout.put("BL in hexadecimal: ",bl," BL in decimal: ", (type uns8 bl), nl);
+	stdout.put("AL in hexadecimal: ",al," AL in decimal: ", (type uns8 al), nl);
+	//mov(0, al);
+	//mov(0, bl);
+	//mov(0, cl); 
+	//mov(0, dl); 
+	
+	//    16 BIT  REGISTERS SECTION
+	//prompt take user input into 4-16bit registers
+	stdout.put(nl, "16 bit registers",nl);
+	stdout.put("Enter first value in range [0..65535]: "); 
+	stdin.getu16();
+	mov(ax, dx);
+	stdout.put("Enter second value in range [0..65535]: "); 
+	stdin.getu16();
+	mov(ax, cx);
+	stdout.put("Enter third value in range [0..65535]: "); 
+	stdin.getu16();
+	mov(ax, bx);
+	stdout.put("Enter for value in range [0..65535]: "); 
+	stdin.getu16();	
+	//output registers values modified and unmodified
+	stdout.put("DX in hexadecimal: ",dx," DX in decimal: ", (type uns16 dx), nl); 	
+	stdout.put("CX in hexadecimal: ",cx," CX in decimal: ", (type uns16 cx), nl);
+	stdout.put("BX in hexadecimal: ",bx," BX in decimal: ", (type uns16 bx), nl);
+	stdout.put("AX in hexadecimal: ",ax," AX in decimal: ", (type uns16 ax), nl);	
+	
+	//output the 8-bit register values in hex and decimal
+	stdout.put(" 8-bit Registers' value ",nl); 
+	stdout.put("DL in hexadecimal: ",dl," DL in decimal: ", (type uns8 dl), nl); 	
+	stdout.put("CL in hexadecimal: ",cl," CL in decimal: ", (type uns8 cl), nl);
+	stdout.put("BL in hexadecimal: ",bl," BL in decimal: ", (type uns8 bl), nl);
+	stdout.put("AL in hexadecimal: ",al," AL in decimal: ", (type uns8 al), nl);
+	
+
+	//  32 BIT REGISTERS SECTION 
+	//prompt and take user input into 4-32bit registers
+	stdout.put(nl, "32 bit registers",nl);
+	stdout.put("Enter first value in range [0..4,204,967,295]: "); 
+	stdin.getu32();
+	mov(eax, edx);
+	stdout.put("Enter second value in range [0..4,204,967,295]: "); 
+	stdin.getu32();
+	mov(eax, ecx);
+	stdout.put("Enter third value in range [0..4,204,967,295]: "); 
+	stdin.getu32();
+	mov(eax, ebx);
+	stdout.put("Enter for value in range [0..4,204,967,295]: "); 
+	stdin.getu32();
+	
+	//output user input modified and unmodified
+	stdout.put("EDX in hexadecimal: ",edx," EDX in decimal: ", (type uns32 edx), nl); 	
+	stdout.put("ECX in hexadecimal: ",ecx," ECX in decimal: ", (type uns32 ecx), nl);
+	stdout.put("EBX in hexadecimal: ",ebx," EBX in decimal: ", (type uns32 ebx), nl);
+	stdout.put("EAX in hexadecimal: ",eax," EAX in decimal: ", (type uns32 eax), nl);
+	
+	//output the 16-bit values in decimal and hex
+	stdout.put(" 16-bit Registers' value ",nl); 
+	stdout.put("DX in hexadecimal: ",dx," DX in decimal: ", (type uns16 dx), nl); 	
+	stdout.put("CX in hexadecimal: ",cx," CX in decimal: ", (type uns16 cx), nl);
+	stdout.put("BX in hexadecimal: ",bx," BX in decimal: ", (type uns16 bx), nl);
+	stdout.put("AX in hexadecimal: ",ax," AX in decimal: ", (type uns16 ax), nl);
+	//output the 8-bit values in decimal and hex
+	stdout.put(" 8-bit Registers' value ",nl); 
+	stdout.put("DL in hexadecimal: ",dl," DL in decimal: ", (type uns8 dl), nl); 	
+	stdout.put("CL in hexadecimal: ",cl," CL in decimal: ", (type uns8 cl), nl);
+	stdout.put("BL in hexadecimal: ",bl," BL in decimal: ", (type uns8 bl), nl);
+	stdout.put("AL in hexadecimal: ",al," AL in decimal: ", (type uns8 al), nl);
+
+	//prompt user to continue, or exit program
+	//check user continue or exit decision. 
+	stdout.put(nl,nl, "Do you want to start over? (y/n):");
+	forever
+			mov(0, al); 	
+			stdin.flushInput();
+			stdin.getc();
+			breakif( al = 'n');
+			breakif( al = 'y');
+		
+			//prompt user of error
+			stdout.put("Error, please enter only 'y' or 'n': " );
+	endfor;	
+	console.cls(); 
+until(al ='n'); 
+
+//end main loop
+stdout.put(nl, "Goodbye!",nl,nl);
+end regDisplay; 

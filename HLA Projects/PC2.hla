@@ -1,0 +1,102 @@
+/*
+ * Program: NumberComparison
+ *
+ * written by			Justin Fonseca
+ * created on			27 August 2017
+ * last modified on		29 August 2017
+ 
+ * This program will compare two numbers and output which
+ * is greater, lesser, or equal. 
+ *
+ */
+
+// program name
+program NumberComparison;
+
+//included library
+#include("stdlib.hhf");
+
+//variable declaration
+static 
+	firstNumber: uns8;
+	secondNumber:uns8;
+	userStateValue: char; 
+
+//start program
+begin NumberComparison;
+//clear screen greet user
+	console.cls();
+	stdout.put("Hello. Welcome to Number Comparison",nl);
+	stdout.put("Press Enter to continue");
+	stdin.getc(); 
+	
+//begin main loop	
+repeat
+	console.cls();
+	stdout.put("Enter two numbers to compare",nl);
+//prompt user for first number input	
+	stdout.put("Enter the first number in the range [1..50]: ");
+	//loop until value in range	
+	repeat 
+		stdin.getu8();
+		if (al < 1 || al > 50)then
+			stdout.put(nl, "Value out of Range! Please enter a number in the range [1..50]: ");
+		endif; 
+	until(al >=1 && al <= 50);
+	//store first number in  memory	
+	mov(al, firstNumber);
+	console.cls(); 
+//prompt user for second number input	
+	stdout.put("Enter the second number in the range [1..50]: " ); 
+	repeat 
+		stdin.getu8();
+	//condition and prompt for value out of range
+		if (al < 1 || al > 50)then
+			stdout.put(nl, "Value out of Range! Please enter a number in the range [1..50]: ");
+		endif;
+	//condition to exit first number input loop	
+	until(al >=1 && al <= 50);
+	
+
+	//store second number in memory
+	mov(al, secondNumber);
+	console.cls(); 		
+
+//compare two values
+	//mov secondNumber to bl register
+	mov(secondNumber, bl);
+	//firstNumber is greater than secondNumber
+	if(firstNumber > bl)then
+		stdout.put("The first number ", firstNumber, " is greater than the second number ", secondNumber, nl); 
+	//secondNumber is greater than firstNumber
+	elseif(bl > firstNumber)then
+		stdout.put("The second number ", secondNumber, " is greater than the first number ", firstNumber, nl);
+	//firstNumber and secondNumber are greater 
+	else
+		stdout.put("The first number ", firstNumber, " is equivalent to the second number ", secondNumber, nl);
+		
+	endif;
+//prompt user to continue or exit
+	stdout.put(nl,nl, "Do you want to play again? (y/n):");
+	forever
+		//clear buffer and get char input
+		stdin.flushInput();
+		stdin.getc();
+		mov(al, userStateValue); 
+		breakif( al = 'n' || al='N');
+		breakif( al = 'y'|| al ='Y');
+		//prompt user of error 
+		stdout.put("Error, please enter only 'y' or 'n': " );
+	endfor;
+	
+//condition to end main loop
+until( al = 'n'|| al ='N');
+console.cls(); 
+stdout.put("Goodbye.",nl);
+
+
+
+
+
+
+end NumberComparison;

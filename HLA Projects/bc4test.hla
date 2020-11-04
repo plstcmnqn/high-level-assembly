@@ -1,0 +1,31 @@
+/*
+ * 
+ *
+ * written by			Justin Fonseca
+ * created on			9 September 2017
+ * last modified on		9 September 2017
+ *
+ * Book challenge 4 testing 
+ *
+ */
+
+program regDisplay;
+
+#include ("stdlib.hhf");
+static 
+	x: int16;
+	y: int16;
+	z: int16;
+	numOne: uns8:= 12;
+	numTwo: uns8:=6;
+begin regDisplay;
+	
+	//review zeroing register for division
+	mov(numOne,al);
+	mov(numTwo,bl);
+	mov(0, ah);
+	div(bl, al);
+	stdout.put("number= ", (type uns8 al));
+	
+stdout.put(nl, "Goodbye!",nl,nl);
+end regDisplay; 

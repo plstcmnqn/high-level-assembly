@@ -1,0 +1,122 @@
+/*
+ * Program: demo1
+ *
+ * written by			Justin Fonseca
+ * created on			18 October 2017
+ * last modified on		20 October 2017
+ *
+ * function: take user input
+ *           output in decimal and binary
+ * 	     perform binary shifts and rotates
+ *           output binary shifts and rotates
+ *           sum two inputs
+ * 	     output if sum exceeds register size
+ * 	     display binary and decimal values of the sum
+
+ *  Notes: exceptions on getUns8 have not been tested
+	   values of shifts and rotates need further reviewing
+ */
+
+
+
+
+program demo2;
+
+#include("stdlib.hhf");
+//forward declared procedures
+procedure getUns8(prompt: string; min: uns8; max: uns8);@forward;
+
+procedure getUns8(prompt: string; min: uns8; max: uns8);
+begin getUns8;
+
+forever
+	stdout.put(prompt);
+	
+
+	try
+		//clear values
+		mov(0,al);
+		//flushInput incase of exception
+		stdin.flushInput();
+		//get 8 bit input 
+		stdin.getu8();
+		unprotected
+		//condition to exit loop
+			if((type uns8 al) >= min && (type uns8 al) <= max) then
+			//test line below			
+			//stdout.put(nl,"getUns8: EVAL PASSED",nl); 
+			break;
+			
+			else
+	//prompt if value out of range
+	stdout.put("enter a value between ", min, " and ", max, nl);
+			endif;
+	anyexception
+		stdout.put("invalid input",nl);	
+			
+	
+
+	endtry;
+endfor;
+end getUns8;
+
+
+
+procedure showBit(someBin: uns8); 
+begin showBit;
+mov(someBin, BH);
+stdout.put("%");
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+stdout.put("_");
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+
+end showBit; 
+
+//main program
+begin demo2;
+
+mov(%1010_1010, al);
+stdout.put("AL: ", (type int8 al), nl);
+not(al);
+add(1, al);
+stdout.put("AL: ", (type int8 al), nl);
+
+end demo2;

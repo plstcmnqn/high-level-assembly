@@ -1,0 +1,152 @@
+program Basket;
+
+#include("stdlib.hhf");
+
+static
+	theBasket: dword;
+	basketSize: uns32;
+	basketType: uns32;
+
+procedure display(address: dword; size: uns32; mtype: uns32);
+begin display;
+
+	if (mtype == 1) then
+		stdout.put("apples -> ");
+	elseif (mtype == 2) then 
+		stdout.put("sandwiches -> ");
+	else
+		stdout.put("cheese -> ");
+	endif;
+	
+	mov(address, eax);
+	for (mov(0, ecx); ecx<size; inc(ecx)) do
+		if (mtype == 1) then
+			stdout.put((type uns8 [eax + ecx * 1]), " ");
+		elseif (mtype == 2) then 
+			stdout.put((type uns16 [eax + ecx * 2]), " ");
+		else
+			stdout.put((type uns32 [eax + ecx * 4]), " ");
+		endif;
+	endfor;
+	stdout.newln();
+
+	stdout.put("LARGEST -> ");
+	if (mtype == 1) then
+		stdout.put((type uns8 [eax + ecx * 1]), " ");
+	elseif (mtype == 2) then 
+		stdout.put((type uns16 [eax + ecx * 2]), " ");
+	else
+		stdout.put((type uns32 [eax + ecx * 4]), " ");
+	endif;
+	stdout.newln();
+		
+end display;
+
+procedure randomValues(address: dword; size: uns32; mtype: uns32);
+begin randomValues;
+	
+	mov(address, ebx);
+	for (mov(0, ecx); ecx<size; inc(ecx)) do
+		if (mtype == 1) then
+			rand.urange(1, 50);
+			mov(al, (type uns8 [ebx + ecx * 1]));
+		elseif (mtype == 2) then
+			rand.urange(100, 500);
+			mov(ax, (type uns16 [ebx + ecx * 2]));
+		else
+			rand.urange(1000, 5000);
+			mov(eax, (type uns32 [ebx + ecx * 4]));
+		endif;
+	endfor;
+
+end randomValues;
+
+procedure computeLargest(address: dword; size: uns32; mtype: uns32);
+begin computeLargest;
+	
+	mov(address, ebx);
+	
+	// assume the first element is the largest
+	mov(0, edx);
+	if (mtype == 1) then
+		mov((type uns8 [ebx]), dl);
+	elseif (mtype == 2) then
+		mov((type uns16 [ebx]), dx);
+	else
+		mov((type uns32 [ebx]), edx);
+	endif;
+	
+	// look through the remaining elements to see if any is bigger
+	for (mov(1, ecx); ecx<size; inc(ecx)) do
+		if (mtype == 1) then
+			if ((type uns8 [ebx + ecx * 1]) > dl) then
+				mov((type uns8 [ebx + ecx * 1]), dl);
+			endif;
+		elseif (mtype == 2) then
+			if ((type uns16 [ebx + ecx * 2]) > dx) then
+				mov((type uns16 [ebx + ecx * 2]), dx);
+			endif;
+		else
+			if ((type uns32 [ebx + ecx * 4]) > edx) then
+				mov((type uns32 [ebx + ecx * 4]), edx);
+			endif;
+		endif;
+	endfor;
+	
+	// write largest value into "secret/compute" cell
+	if (mtype == 1) then
+		mov(dl, (type uns8 [ebx + ecx * 1]));
+	elseif (mtype == 2) then
+		mov(dx, (type uns16 [ebx + ecx * 2]));
+	else
+		mov(edx, (type uns32 [ebx + ecx * 4]));
+	endif;
+
+end computeLargest;
+	
+begin Basket;
+
+	rand.randomize();
+
+	stdout.put("How big a basket? ");
+	stdin.getu32();
+	mov(eax, basketSize);
+	
+	// apples: uns8, sandwiches: uns16, cheese: uns32
+	stdout.put("What type of basket [1: apples, 2:sandwiches, 3:cheese]: ");
+	stdin.flushInput();
+	stdin.getu32();
+	mov(eax, basketType);
+	
+	// use eax to hold number of bytes for array
+	mov(basketSize, eax);
+	inc(eax);
+	if (basketType == 2) then
+		mul(2, eax);
+	elseif (basketType == 3) then
+		mul(4, eax);
+	endif;
+	
+	// allocate the memory
+	stdout.put("Allocating ", (type uns32 eax), " bytes...", nl);
+	mem.zalloc(eax);
+	mov(eax, theBasket);
+	
+	// do processing work here, probably in a loop
+	forever
+		randomValues(theBasket, basketSize, basketType);
+		stdout.newln();
+		
+		computeLargest(theBasket, basketSize, basketType);
+		display(theBasket, basketSize, basketType);
+		
+		stdout.put("Go again [y/n]? ");
+		stdin.flushInput();
+		breakif(chars.toUpper(stdin.getc()) == 'N');
+	
+	endfor;
+	
+	mem.free(theBasket);
+	
+end Basket;
+

@@ -1,0 +1,167 @@
+/*
+ * Program: demo1
+ *
+ * written by			Justin Fonseca
+ * created on			18 October 2017
+ * last modified on		20 October 2017
+ *
+ * function: take user input
+ *           output in decimal and binary
+ * 	     perform binary shifts and rotates
+ *           output binary shifts and rotates
+ *           sum two inputs
+ * 	     output if sum exceeds register size
+ * 	     display binary and decimal values of the sum
+
+ *  Notes: exceptions on getUns8 have not been tested
+	   values of shifts and rotates need further reviewing
+ */
+
+
+
+
+program demo1;
+
+#include("stdlib.hhf");
+//forward declared procedures
+procedure getUns8(prompt: string; min: uns8; max: uns8);@forward;
+
+procedure getUns8(prompt: string; min: uns8; max: uns8);
+begin getUns8;
+
+forever
+	stdout.put(prompt);
+	
+
+	try
+		//clear values
+		mov(0,al);
+		//flushInput incase of exception
+		stdin.flushInput();
+		//get 8 bit input 
+		stdin.getu8();
+		unprotected
+		//condition to exit loop
+			if((type uns8 al) >= min && (type uns8 al) <= max) then
+			//test line below			
+			//stdout.put(nl,"getUns8: EVAL PASSED",nl); 
+			break;
+			
+			else
+	//prompt if value out of range
+	stdout.put("enter a value between ", min, " and ", max, nl);
+			endif;
+	anyexception
+		stdout.put("invalid input",nl);	
+			
+	
+
+	endtry;
+endfor;
+end getUns8;
+
+
+
+procedure showBit(someBin: uns8); 
+begin showBit;
+mov(someBin, BH);
+stdout.put("%");
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+stdout.put("_");
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+shl(1, BH); //1st
+lahf();
+and( %0000_0001, AH );
+stdout.putu8(AH);
+
+
+end showBit; 
+
+//main program
+begin demo1;
+	// PART ONE
+	mov(0,ah);
+	getUns8("Enter a value in range (0..255): ",0,255);
+	stdout.put("AL:                   DEC: ", (type uns8 al), " Binary: ");
+	push(ax);	
+	showBit(al);
+	pop(ax);
+	push(ax);
+	stdout.put(nl);
+	ror(1,al);
+	stdout.put("AL Rotate right 1 := DEC: ", (type uns8 al), " Binary: ");
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+	push(ax);
+	rol(1,al);
+	stdout.put("AL Rotate left 1 := DEC: ", (type uns8 al), " Binary: ");
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+	push(ax);
+	shr(1,al);
+	stdout.put("AL Shift Right 1 := DEC: ", (type uns8 al), " Binary: ");
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+ 	push(ax);
+	shl(1,al);
+	stdout.put("AL Shift Left 1 := DEC: ", (type uns8 al), " Binary: ");
+	showBit(al);
+	pop(ax);
+	stdout.put(nl);
+	
+	//Part TWO
+	getUns8("Enter a first value in range (0..255): ",0,255);
+	push(ax);
+	getUns8("Enter a second value in range (0..255): ",0,255);
+	mov(al,dl);
+	pop(ax);
+	
+	add(dl, al);
+	if(@c)then
+	stdout.put(nl,"CARRY BIT SET/OVERFLOW");
+	stdout.put(nl);
+	endif;
+
+	stdout.put("SUM: ", (type uns8 al), " Binary: ");
+	showBit(al);
+	stdout.put(nl);
+	
+	
+
+end demo1;
